@@ -1,6 +1,5 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from account.models import User
 import json
 
 
@@ -16,7 +15,7 @@ class TestViews(TestCase):
         self.client = Client()
         self.register_url = reverse("register")
 
-    def test_successful_user_register_POST(self):
+    def test_successful_user_register_post(self):
         """
         Test if user can be registered successfully
         """
