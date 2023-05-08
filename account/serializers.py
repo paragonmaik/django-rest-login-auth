@@ -12,6 +12,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     Methods:
         validate(attrs):
             Validates if password and password2 fields are a match.
+
+        create(validated_data):
+            Creates user with the validated data.
     """
     password2 = serializers.CharField(
         style={"input_type": "password"}, write_only=True)
@@ -33,3 +36,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+
+class UserLoginSerializer(serializers.ModelSerializer):
+    """
+    Serializes user login data.
+    """
+    email = serializers.EmailField(max_length=255)
+
+    class Meta:
+        model = User
+        fields = ["email", "password"]
