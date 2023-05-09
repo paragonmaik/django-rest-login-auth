@@ -1,3 +1,6 @@
+"""
+Module for account app views tests.
+"""
 import json
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -5,19 +8,19 @@ from django.urls import reverse
 
 class TestViews(TestCase):
     """
-    Test views class
+    Test views class.
     """
 
     def setUp(self) -> None:
         """
-        Sets up test client and testing URLs
+        Sets up test client and testing URLs.
         """
         self.client = Client()
         self.register_url = reverse("register")
 
     def test_successful_user_register_post(self):
         """
-        Test if user can be registered successfully
+        Test if user can be registered successfully.
         """
         response = self.client.post(self.register_url, {
             "name": "Teste",
@@ -34,7 +37,7 @@ class TestViews(TestCase):
 
     def test_unsuccessful_user_register_post(self):
         """
-        Test if user can be registered successfully
+        Test if user can be registered successfully.
         """
         response = self.client.post(self.register_url, {
             "name": "",
