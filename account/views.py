@@ -26,7 +26,7 @@ class UserRegistrationView(APIView):
     User Registration class with a post method.
     ...
     Methods:
-        post(request, format=None):
+        post(request):
             POST method for user registration.
     """
     serializer_class = UserRegistrationSerializer
@@ -46,3 +46,35 @@ class UserRegistrationView(APIView):
         token = get_tokens_for_user(user)
         return Response({"token": token, "message": "Registered!"},
                         status=status.HTTP_201_CREATED)
+
+
+class UserLoginView(APIView):
+    """
+    User Login class with a post method.
+    ...
+    Methods:
+        post(request):
+            POST method for user Login.
+    """
+    renderer_classes = [UserRenderer]
+
+    def post(self, request):
+        """
+        POST method for user Login.
+        """
+        serializer = UserLoginSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+        email = serializer.data.get("email")
+        password = serializer.data.get("password")
+        user = authenticate(email=email, password=password)
+
+        if user is None:
+            return Response({"errors": {"non_field_errors": ["Invalid Email or Password!"]}},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        token = get_tokens_for_user(user)
+        return Response({"token": token, "message": "Logged in!"}, status=status.HTTP_200_OK)
