@@ -11,6 +11,9 @@ from .renderers import UserRenderer
 
 
 def get_tokens_for_user(user):
+    """
+    Helper function for user token generation.
+    """
     refresh = RefreshToken.for_user(user)
     return {
         "refresh": str(refresh),
