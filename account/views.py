@@ -1,8 +1,12 @@
+"""
+Account views module.
+"""
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, serializers
 from rest_framework_simplejwt.tokens import RefreshToken
-from account.serializers import UserRegistrationSerializer
+from django.contrib.auth import authenticate
+from account.serializers import UserRegistrationSerializer, UserLoginSerializer
 from .renderers import UserRenderer
 
 
@@ -16,14 +20,18 @@ def get_tokens_for_user(user):
 
 class UserRegistrationView(APIView):
     """
-    User Registration class with a post method
+    User Registration class with a post method.
+    ...
+    Methods:
+        post(request, format=None):
+            POST method for user registration.
     """
     serializer_class = UserRegistrationSerializer
     renderer_classes = (UserRenderer,)
 
-    def post(self, request, format=None):
+    def post(self, request):
         """
-        POST method that registers the user
+        POST method for user registration.
         """
         serializer = self.serializer_class(data=request.data)
         try:
