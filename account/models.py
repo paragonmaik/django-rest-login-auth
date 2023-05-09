@@ -1,8 +1,19 @@
+"""
+Account models module.
+"""
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
 
 
 class UserManager(BaseUserManager):
+    """
+    Manages type of created user.
+    ...
+    Methods:
+        create_user(email, name, terms_conditions, password=None, password2=None):
+            POST method for user registration.
+    """
+
     def create_user(self, email, name, terms_conditions, password=None, password2=None):
         """
         Creates and saves a User with the given data.
@@ -22,6 +33,9 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser):
+    """
+    User model.
+    """
     email = models.EmailField(
         verbose_name='Email',
         max_length=255,

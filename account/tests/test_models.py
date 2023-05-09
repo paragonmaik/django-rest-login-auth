@@ -1,3 +1,6 @@
+"""
+Module for account app models tests.
+"""
 from django.test import TestCase
 from account.models import User
 
