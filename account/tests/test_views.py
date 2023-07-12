@@ -53,6 +53,31 @@ class TestRegisterView(TestCase):
         self.assertTrue("errors" in response_body)
 
 
+class TestAdminRegisterView(TestCase):
+    """
+    Tests admin registration view.
+    """
+
+    def setUp(self) -> None:
+        """
+        Sets up test client and testing URLs.
+        """
+        self.client = Client()
+        self.register_url = reverse("register_admin")
+
+    def test_successful_admin_register_post(self):
+        """
+        Test if admin can be registered successfully.
+        """
+        response = self.client.post(self.register_url, {
+            "name": "Admin",
+            "email": "Admin@example.com",
+            "password": "Teste123@@",
+            "password2": "Teste123@@",
+            "terms_conditions": "True",
+        })
+
+
 class TestLoginView(TestCase):
     """
     Tests login views.
