@@ -14,7 +14,8 @@ class UserManager(BaseUserManager):
             POST method for user registration.
     """
 
-    def create_user(self, email, name, terms_conditions, password=None, password2=None):
+    def create_user(self, email, name, terms_conditions,
+                    is_admin=False, password=None, password2=None):
         """
         Creates and saves a User with the given data.
         """
@@ -28,6 +29,24 @@ class UserManager(BaseUserManager):
         )
 
         user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, name, terms_conditions,
+                         is_admin, password=None):
+        """
+        Creates and saves a superuser with the given data.
+        """
+        if not email:
+            raise ValueError('User must have an email address')
+
+        user = self.create_user(
+            email,
+            password=password,
+            name=name,
+            terms_conditions=terms_conditions,
+        )
+        user.is_admin = is_admin
         user.save(using=self._db)
         return user
 
