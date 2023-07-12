@@ -21,7 +21,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["email", "name", "password", "password2", "terms_conditions"]
+        fields = ["email", "name", "password",
+                  "password2", "terms_conditions", "is_admin"]
         extra_kwargs = {
             "password": {"write_only": True}
         }
@@ -35,6 +36,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
+        print(validated_data)
+        # if validated_data.is_admin:
+        #    return User.objects.create_superuser(**validated_data)
+
         return User.objects.create_user(**validated_data)
 
 
