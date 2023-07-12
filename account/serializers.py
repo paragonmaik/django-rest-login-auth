@@ -36,9 +36,9 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-        print(validated_data)
-        # if validated_data.is_admin:
-        #    return User.objects.create_superuser(**validated_data)
+        print(validated_data["is_admin"])
+        if validated_data["is_admin"]:
+            return User.objects.create_superuser(**validated_data)
 
         return User.objects.create_user(**validated_data)
 
