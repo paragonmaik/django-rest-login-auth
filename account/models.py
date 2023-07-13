@@ -33,7 +33,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, terms_conditions,
-                         is_admin, password=None):
+                         is_admin, password=None, password2=None):
         """
         Creates and saves a superuser with the given data.
         """
@@ -74,3 +74,22 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return str(self.email)
+
+    def has_perm(self, perm, obj=None):
+        """
+        Returns whether user has specific permission.
+        """
+        return self.is_admin
+
+    def has_module_perms(self, app_label):
+        """
+        Returns whether user can view the specified app.
+        """
+        return True
+
+    @property
+    def is_staff(self):
+        """
+        Return whether user is an admin.
+        """
+        return self.is_admin
