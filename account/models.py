@@ -33,7 +33,7 @@ class UserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, name, terms_conditions,
-                         is_admin, password=None, password2=None):
+                         is_admin=True, password=None, password2=None):
         """
         Creates and saves a superuser with the given data.
         """
