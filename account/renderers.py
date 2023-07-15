@@ -1,9 +1,19 @@
-from rest_framework import renderers
+"""
+User renderer modules.
+"""
 import json
+from rest_framework import renderers
 
 
 class UserRenderer(renderers.JSONRenderer):
-    charset = 'utf-8'
+    """
+    User renderer for user related requests with a render method. 
+    ...
+    Methods:
+        render(request):
+            Renders user related responses.
+    """
+    charset = "utf-8"
 
     def render(self, data, accepted_media_type=None, renderer_context=None):
         response = ""
