@@ -7,7 +7,6 @@ from rest_framework import status, serializers
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from django.contrib.auth.decorators import login_required
 from account.serializers import (
     UserRegistrationSerializer, UserLoginSerializer, UserPasswordChangeSerializer)
 from .renderers import UserRenderer
