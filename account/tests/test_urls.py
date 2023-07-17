@@ -3,7 +3,7 @@ Module for account app URLs tests.
 """
 from django.test import SimpleTestCase
 from django.urls import reverse, resolve
-from account.views import UserRegistrationView, UserLoginView
+from account.views import UserRegistrationView, UserLoginView, UserPasswordChangeView
 
 
 class TestUrls(SimpleTestCase):
@@ -31,3 +31,10 @@ class TestUrls(SimpleTestCase):
         """
         url = reverse("login")
         self.assertEqual(resolve(url).func.view_class, UserLoginView)
+
+    def test_password_change_url_resolves(self):
+        """
+        Tests password-change/ URL.
+        """
+        url = reverse("password_change")
+        self.assertEqual(resolve(url).func.view_class, UserPasswordChangeView)
