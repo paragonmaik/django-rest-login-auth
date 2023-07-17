@@ -62,7 +62,7 @@ class UserLoginView(APIView):
     """
     renderer_classes = [UserRenderer]
 
-    def post(self, request, format=None):
+    def post(self, request):
         """
         POST method for user Login.
         """
@@ -95,11 +95,10 @@ class UserPasswordChangeView(APIView):
     renderer_classes = [UserRenderer]
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, format=None):
+    def post(self, request):
         """
         POST method for user password change.
         """
-        print("------------", request.user)
         serializer = UserPasswordChangeSerializer(
             data=request.data, context={"user": request.user})
         try:
