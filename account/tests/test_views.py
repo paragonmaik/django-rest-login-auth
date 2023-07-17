@@ -110,3 +110,68 @@ class TestLoginView(TestCase):
         response_body = json.loads(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 404)
         self.assertTrue("errors" in response_body)
+
+
+class TestPasswordChangeView(TestCase):
+    """
+    Tests password change views.
+    """
+
+    def setUp(self) -> None:
+        """
+        Sets up test client and testing URLs.
+        """
+        self.client = Client()
+        self.login_url = reverse("login")
+        self.change_password_url = reverse("password_change")
+        self.user1 = User.objects.create_user(
+            name="Teste",
+            email="teste@email.com",
+            terms_conditions=True,
+            password="Teste123**"
+        )
+
+        response_login = self.client.post(self.login_url, {
+            "email": "teste@email.com",
+            "password": "Teste123**"
+        })
+
+        response_body_login = json.loads(
+            response_login.content.decode("utf-8"))
+
+        self.token = response_body_login["token"]["access"]
+
+    def test_successful_password_change(self):
+        """
+        Tests if password is changed sucessfully.
+        """
+        headers = {
+            "HTTP_AUTHORIZATION": "Bearer " + self.token}
+
+        response = self.client.post(self.change_password_url, {
+            "password": "Newpassword123**",
+            "password2": "Newpassword123**"
+        }, content_type="application/json",
+            **headers)
+
+        response_body = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_body["message"],
+                         "Password was changed successfully.")
+
+    def test_unsuccessful_password_change(self):
+        """
+        Tests if user is unable to change passwords that don't match.
+        """
+        headers = {
+            "HTTP_AUTHORIZATION": "Bearer " + self.token}
+
+        response = self.client.post(self.change_password_url, {
+            "password": "Newpassword123**",
+            "password2": "Newpassword"
+        }, content_type="application/json",
+            **headers)
+
+        response_body = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 401)
+        self.assertTrue("errors" in response_body)

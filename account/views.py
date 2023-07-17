@@ -4,9 +4,12 @@ Account views module.
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, serializers
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from account.serializers import UserRegistrationSerializer, UserLoginSerializer
+from django.contrib.auth.decorators import login_required
+from account.serializers import (
+    UserRegistrationSerializer, UserLoginSerializer, UserPasswordChangeSerializer)
 from .renderers import UserRenderer
 
 
@@ -36,7 +39,6 @@ class UserRegistrationView(APIView):
         """
         POST method for user registration.
         """
-        request.data['is_admin'] = False
 
         serializer = self.serializer_class(data=request.data)
         try:
@@ -60,7 +62,7 @@ class UserLoginView(APIView):
     """
     renderer_classes = [UserRenderer]
 
-    def post(self, request):
+    def post(self, request, format=None):
         """
         POST method for user Login.
         """
@@ -80,3 +82,30 @@ class UserLoginView(APIView):
 
         token = get_tokens_for_user(user)
         return Response({"token": token, "message": "Logged in!"}, status=status.HTTP_200_OK)
+
+
+class UserPasswordChangeView(APIView):
+    """
+    User password change class with a post method.
+    ...
+    Methods:
+        post(request, format):
+            POST method for password change.
+    """
+    renderer_classes = [UserRenderer]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, format=None):
+        """
+        POST method for user password change.
+        """
+        print("------------", request.user)
+        serializer = UserPasswordChangeSerializer(
+            data=request.data, context={"user": request.user})
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({"message": "Password was changed successfully."},
+                        status=status.HTTP_200_OK)
