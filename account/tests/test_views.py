@@ -10,6 +10,16 @@ from account.models import User
 class TestRegisterView(TestCase):
     """
     Tests register views.
+    ...
+    Methods:
+        setUp():
+            Sets test client and URL variables.
+
+        test_successful_user_register_post():
+            Tests successful register post.
+
+        test_unsuccessful_user_register_post():
+            Tests unsuccessful register post.
     """
 
     def setUp(self) -> None:
@@ -56,6 +66,19 @@ class TestRegisterView(TestCase):
 class TestLoginView(TestCase):
     """
     Tests login views.
+    ...
+    Methods:
+        setUp():
+            Sets test client and URL variables.
+
+        test_sucessful_login_post():
+            Tests successful login post.
+
+        test_unsuccessful_login_missing_data_post():
+            Tests unsuccessful login post.
+
+        test_unsuccessful_login_invalid_field_post():
+            Tests unsuccessful login post.
     """
 
     def setUp(self) -> None:
@@ -108,13 +131,23 @@ class TestLoginView(TestCase):
         })
 
         response_body = json.loads(response.content.decode("utf-8"))
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 401)
         self.assertTrue("errors" in response_body)
 
 
 class TestPasswordChangeView(TestCase):
     """
     Tests password change views.
+    ...
+    Methods:
+        setUp():
+            Sets test client and URL variables.
+
+        test_successful_password_change():
+            Tests successful password change post.
+
+        test_unsuccessful_password_change():
+            Tests unsuccessful password change post.
     """
 
     def setUp(self) -> None:
@@ -175,3 +208,29 @@ class TestPasswordChangeView(TestCase):
         response_body = json.loads(response.content.decode("utf-8"))
         self.assertEqual(response.status_code, 401)
         self.assertTrue("errors" in response_body)
+
+
+class TestPasswordResetEmailView(TestCase):
+    """
+    Tests password reset email views.
+    ...
+    Methods:
+        setUp():
+            Sets test client and URL variables.
+
+        test_successful_password_reset_email():
+            Tests successful password email post.
+
+        test_unsuccessful_password_reset_email():
+            Tests unsuccessful password email post.
+    """
+
+    def test_successful_password_reset_email(self):
+        """
+        Tests if password reset email is requested with valid data.
+        """
+
+    def test_unsucessful_password_reset_email(self):
+        """
+        Tests if password reset email is not requested with invalid data.
+        """
