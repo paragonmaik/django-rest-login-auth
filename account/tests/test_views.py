@@ -225,12 +225,38 @@ class TestPasswordResetEmailView(TestCase):
             Tests unsuccessful password email post.
     """
 
+    def setUp(self) -> None:
+        self.client = Client()
+        self.reset_password_url = reverse("send_reset_password_email")
+        self.user1 = User.objects.create_user(
+            name="Teste",
+            email="teste@email.com",
+            terms_conditions=True,
+            password="Teste123**"
+        )
+
     def test_successful_password_reset_email(self):
         """
         Tests if password reset email is requested with valid data.
         """
+        response = self.client.post(self.reset_password_url, {
+            "email": self.user1.email
+        })
+
+        response_body = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_body["message"],
+                         "If the given email belongs to a user, a reset link will be sent.")
 
     def test_unsucessful_password_reset_email(self):
         """
         Tests if password reset email is not requested with invalid data.
         """
+        response = self.client.post(self.reset_password_url, {
+            "email": self.user1.email
+        })
+
+        response_body = json.loads(response.content.decode("utf-8"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_body["message"],
+                         "If the given email belongs to a user, a reset link will be sent.")

@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from account.serializers import (
-    UserRegistrationSerializer, UserLoginSerializer, UserPasswordChangeSerializer)
+    UserRegistrationSerializer, UserLoginSerializer, UserPasswordChangeSerializer, SendPasswordResetEmailSerializer)
 from .renderers import UserRenderer
 
 
@@ -77,7 +77,7 @@ class UserLoginView(APIView):
 
         if user is None:
             return Response({"errors": {"non_field_errors": ["Invalid Email or Password!"]}},
-                            status=status.HTTP_404_NOT_FOUND)
+                            status=status.HTTP_401_UNAUTHORIZED)
 
         token = get_tokens_for_user(user)
         return Response({"token": token, "message": "Logged in!"}, status=status.HTTP_200_OK)
@@ -88,7 +88,7 @@ class UserPasswordChangeView(APIView):
     User password change class with a post method.
     ...
     Methods:
-        post(request, format):
+        post(request):
             POST method for password change.
     """
     renderer_classes = [UserRenderer]
@@ -107,3 +107,29 @@ class UserPasswordChangeView(APIView):
 
         return Response({"message": "Password was changed successfully."},
                         status=status.HTTP_200_OK)
+
+
+class SendPasswordResetEmailView(APIView):
+    """
+    Password sender class with a post method.
+    ...
+    Methods:
+        post(request, format):
+            POST method for password change.
+    """
+    renderer_classes = [UserRenderer]
+
+    def post(self, request):
+        """
+        POST method for password reset email.
+        """
+        serializer = SendPasswordResetEmailSerializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            return Response(serializer.errors, status=status.HTTP_200_OK)
+
+        return Response({
+            "message": "If the given email belongs to a user, a reset link will be sent."
+        },
+            status=status.HTTP_200_OK)
