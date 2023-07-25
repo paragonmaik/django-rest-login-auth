@@ -8,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from account.serializers import (
-    UserRegistrationSerializer, UserLoginSerializer, UserPasswordChangeSerializer, SendPasswordResetEmailSerializer)
+    UserRegistrationSerializer, UserLoginSerializer, UserPasswordChangeSerializer,
+    SendPasswordResetEmailSerializer, UserPasswordResetSerializer)
 from .renderers import UserRenderer
 
 
@@ -114,7 +115,7 @@ class SendPasswordResetEmailView(APIView):
     Password sender class with a post method.
     ...
     Methods:
-        post(request, format):
+        post(request):
             POST method for password change.
     """
     renderer_classes = [UserRenderer]
@@ -133,3 +134,29 @@ class SendPasswordResetEmailView(APIView):
             "message": "If the given email belongs to a user, a reset link will be sent."
         },
             status=status.HTTP_200_OK)
+
+
+class UserPasswordResetView(APIView):
+    """
+    Password change class with a post method.
+    ...
+    Methods:
+        post(request, request, uid, token, format):
+            POST method for password change through reset link.
+    """
+    renderer_classes = [UserRenderer]
+
+    def post(self, request, uid, token, format=None):
+        """
+        POST method for password reset.
+        """
+        serializer = UserPasswordResetSerializer(
+            data=request.data, context={"uid": uid, "token": token}
+        )
+        try:
+            serializer.is_valid(raise_exception=True)
+        except serializers.ValidationError:
+            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response({"message": "Password has been successfully reset."},
+                        status=status.HTTP_200_OK)

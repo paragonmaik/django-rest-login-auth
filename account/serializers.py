@@ -2,8 +2,8 @@
 Module for users data serialization.
 """
 from rest_framework import serializers
-from django.utils.http import urlsafe_base64_encode
-from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, smart_str
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from account.models import User
 from account.utils import Util
@@ -96,7 +96,7 @@ class SendPasswordResetEmailSerializer(serializers.ModelSerializer):
     ...
     Methods:
         validate(attrs):
-            Validates if password and password2 fields are a match.
+            Validates if email is valid.
     """
     email = serializers.EmailField(max_length=255)
 
@@ -124,5 +124,43 @@ class SendPasswordResetEmailSerializer(serializers.ModelSerializer):
         }
 
         Util.send_email(data)
+
+        return attrs
+
+
+class UserPasswordResetSerializer(serializers.ModelSerializer):
+    """
+    Serializes password reset data.
+    ...
+    Methods:
+        validate(attrs):
+            Validates if password and password2 fields are a match.
+    """
+    class Meta:
+        model = User
+        fields = ["password", "password2"]
+
+    def validate(self, attrs):
+        password = attrs.get("password")
+        password2 = attrs.get("password2")
+
+        uid = self.context.get("uid")
+        token = self.context.get("token")
+
+        if uid is None or token is None:
+            raise serializers.ValidationError("Unexpected Error!")
+
+        if password != password2:
+            raise serializers.ValidationError(
+                "Passwords do not match!")
+
+        user_id = smart_str(urlsafe_base64_encode(uid))
+        user = User.objects.get(id=user_id)
+
+        if not PasswordResetTokenGenerator().check_token(user, token):
+            raise serializers.ValidationError("Token has expired.")
+
+        user.set_password(password)
+        user.save()
 
         return attrs
